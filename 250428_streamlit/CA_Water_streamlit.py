@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.family'] = 'Malgun Gothic'  # 또는 출력된 다른 이름
 plt.rcParams['axes.unicode_minus'] = False  # 한글 폰트 사용 시, 마이너스 기호 깨짐 방지
 
+
 def check_to_log(df):
     # 로그 변환 대상 컬럼 리스트 (양수여야 함)
     columns_to_check = ['탁도', '약품주입율 계산']  # 필요시 다른 컬럼 추가
@@ -86,8 +87,8 @@ def load_data():
     ]
 
     
-    # 탁도 분포에 따라 로그 변환 실행
-    df['로그 탁도'] = np.log10(df["탁도"])
+    # # 탁도 분포에 따라 로그 변환 실행
+    # df['로그 탁도'] = np.log10(df["탁도"])
 
 
     return df
