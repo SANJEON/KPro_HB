@@ -39,15 +39,12 @@ def load_data():
     basedir = os.path.dirname(os.path.abspath(__file__))
     data_path = os.path.join(basedir, 'data', 'CA_Water_Quality.CSV')
 
-    print(data_path)
     df = pd.read_csv(data_path, encoding="CP949")
     # df["로그 탁도"] = np.log10(df["탁도"])
     # df["로그 응집제 주입률"] = np.log10(int(df["약품주입율 계산"]))
     # np.log10은 데이터 전처리 후 사용
-    
-    
-    df.rename(columns={'약품주입율 계산': '약품주입율'}, inplace=True)
 
+    df.rename(columns={'약품주입율 계산': '약품주입율'}, inplace=True)
 
     df = df[
         [
@@ -62,6 +59,7 @@ def load_data():
         ]
     ]
 
+
     # 두 컬럼만 숫자로 변환 (숫자가 아닌 값은 NaN으로 처리)
     df['탁도'] = pd.to_numeric(df['탁도'], errors='coerce')
     df['약품주입율'] = pd.to_numeric(df['약품주입율'], errors='coerce')
@@ -69,12 +67,24 @@ def load_data():
     # 변환 후 NaN 확인 (비정상값이 있었는지 확인 가능)
     print(df[['탁도', '약품주입율']].isna().sum())
 
-    # 탁도 0개, 약품주입율 11개 데이터가 na로, 행 삭제
+    # 탁도 0개, 약품주입율 계산 11개 데이터가 na로, 행 삭제
 
     df = df.dropna(subset=['탁도', '약품주입율'])
 
-    # 탁도 분포에 따라 로그 변환 실행
-    df['로그 탁도'] = np.log10(df["탁도"])
+    # 1. 모든 열에 대해 하나라도 0이 있으면 해당 행 삭제
+    df = df[(df != 0).all(axis=1)]
+
+    # 2. 조건에 맞는 이상치 제거
+    df = df[
+        (df['탁도'] <= 500) &
+        (df['pH'] >= 5) &
+        (df['알칼리도'] >= 5) &
+        (df['전기전도도'] >= 10) &
+        (df['수온'] <= 50) &
+        (df['유입유량'] >= 5000) & (df['유입유량'] <= 20000) &
+        (df['침전탁도'] <= 1000)
+    ]
+
 
     return df
 
